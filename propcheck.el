@@ -325,6 +325,26 @@ Note that elisp does not have a separate character type."
         (push (funcall value-fn nil) result))
       result)))
 
+(cl-defun propcheck-generate-nested-list (name &key value-fn
+                                               (nesting-chance 100)
+                                               (nesting-chance-scalar 2)
+                                               (length-chance 50)
+                                               (length-chance-scalar 2))
+  "Generate a possibly nested list whose values are drawn from
+VALUE-FN. NESTING-CHANCE and LENGTH-CHANCE are scaled by
+NESTING-CHANCE-SCALAR and LENGTH-CHANCE-SCALAR respectively.Their
+starting values can be tuned to yield different shapes and
+depths."
+  (propcheck-remember name
+    (let ((result `(,(funcall value-fn nil)))
+          (byte 0))
+      (while (> (progn (setq byte (propcheck--draw-byte propcheck-seed))) length-chance)
+        (if (> byte nesting-chance)
+            (push (propcheck-generate-nested-list name :value-fn value-fn :nesting-chance (* nesting-chance-scalar nesting-chance) :length-chance (* length-chance-scalar length-chance)) result)
+          (push (funcall value-fn nil) result)))
+      result)))
+  
+
 (defun propcheck-generate-vector (name &key value-fn)
   "Generate a vector whose values are drawn from VALUE-FN."
   (propcheck-remember name
