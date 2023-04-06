@@ -343,7 +343,15 @@ depths."
             (push (propcheck-generate-nested-list name :value-fn value-fn :nesting-chance (* nesting-chance-scalar nesting-chance) :length-chance (* length-chance-scalar length-chance)) result)
           (push (funcall value-fn nil) result)))
       result)))
-  
+
+(cl-defun propcheck-filter (name generator pred &key (limit 1000))
+  "Apply PRED to GENERATOR until a passing value is returned. Stops after LIMIT tries (default 1000)."
+  (catch 'found
+    (dotimes (number limit)
+      (let ((val (funcall generator name)))
+        (when (funcall pred val)
+          (throw 'found val))))))
+
 (defun propcheck-choose-one-of (name generators)
   "Run one of the generators in the GENERATORS list."
   (propcheck-remember name
