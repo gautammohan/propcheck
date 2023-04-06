@@ -344,6 +344,11 @@ depths."
           (push (funcall value-fn nil) result)))
       result)))
   
+(defun propcheck-choose-one-of (name generators)
+  "Run one of the generators in the GENERATORS list."
+  (propcheck-remember name
+    (let ((generator (nth (mod (propcheck--draw-byte propcheck-seed) (safe-length generators)) generators)))
+      (funcall generator nil))))
 
 (defun propcheck-generate-vector (name &key value-fn)
   "Generate a vector whose values are drawn from VALUE-FN."
