@@ -336,7 +336,7 @@ NESTING-CHANCE-SCALAR and LENGTH-CHANCE-SCALAR respectively.Their
 starting values can be tuned to yield different shapes and
 depths."
   (propcheck-remember name
-    (let ((result `(,(funcall value-fn nil)))
+    (let ((result `(,(funcall value-fn name)))
           (byte 0))
       (while (> (progn (setq byte (propcheck--draw-byte propcheck-seed))) length-chance)
         (if (> byte nesting-chance)
